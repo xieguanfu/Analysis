@@ -57,9 +57,14 @@ MGDBS = {
         'bd':{
             'HOST':'app.maimiaotech.com',
             'PORT':1996,
+        },
+        'source':{
+            'HOST':'app.maimiaotech.com',
+            'PORT':2006,
         }
     }
 
 #利用mongodb 自带的connection poll 来管理数据库连接
 syb_db = Connection(host=MGDBS['syb']['HOST'],port=MGDBS['syb']['PORT'])
 bd_db = Connection(host=MGDBS['bd']['HOST'],port=MGDBS['bd']['PORT'])
+source_db = Connection(host=MGDBS['source']['HOST'],port=MGDBS['source']['PORT'])

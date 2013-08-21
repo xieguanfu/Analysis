@@ -19,6 +19,8 @@ from CommonTools.send_tools import send_email_with_file, DIRECTOR
 from CommonTools.report_tools import Report, MAIN_KEYS 
 from user_center.services.order_db_service import OrderDBService
 from DataAnalysis.db_model.shop_db import Shop
+import csv
+import re
 
 def write_renew_report(file_name, nick_list):
     """收集nick_list的报表"""
@@ -113,9 +115,42 @@ def special_content_service():
                 if not nick:
                     break
                 message_dict = {'status':'new', 'worker':'', 'message':content}
-                if Shop.upsert_cs_message(nick, message_dict):
-                    print nick + ":" + str(id)
+                print  nick,message_dict["message"]
+                #if Shop.upsert_cs_message(nick, message_dict):
+                #    print nick + ":" + str(id)
         
+def special_content_service_new():
+    """
+    将淘宝给我们的建议放入到自动留言里
+    现在是用户名和建议放在同一个文件中,    
+    第一行为标题，第二行开始为实际内容 ,格式: nic ,留言内容,(等其他信息)
+    """
+
+    
+    #加载留言用户
+    liuyan = file(CURRENT_DIR+'data/liuyan0809.csv')
+    liuyan_list=csv.reader(liuyan)
+    index=0
+    for line_data in liuyan_list:
+        index+=1
+        if index==1:
+            continue
+        if len(line_data)>=2:
+            nick=line_data[0]
+            message=line_data[3]
+            message=message.replace("#",",")
+            r=re.compile("\n{2,}")
+            message=r.sub("\n",message)
+            #print "%s,%s" % (index,message)
+            if nick is None or nick=="":
+                print nick,message
+                continue
+            message_dict={"status":"new","worker":"","message":message}
+            if Shop.upsert_cs_message(nick, message_dict):
+                print "%s\t%s" %(nick,index)
+
+
+
 def auto_support_service():
     """自动生成特殊服务支持"""
     MESSAGE_A = '亲爱的掌柜您好~谨代表麦苗团队全体成员欢迎您入驻省油宝！不知亲这两天使用下来感觉怎么样呢？有问题要随时和我联系哦，如果我不在线，亲可以留言呢~！期待与亲有更多的交流，一定竭诚为亲服务的！'
@@ -188,4 +223,5 @@ def renew_account_service(_days = 4):
 if __name__ == '__main__':
     auto_support_script()
     #special_content_service()
+    #special_content_service_new()
     #renew_account_service()

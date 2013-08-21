@@ -41,5 +41,6 @@ class ZtcReport:
     @classmethod
     def to_string(self, report):
         string_list = [str(report[key]) for key in KEYS]
+        print string_list
         return ','.join(string_list)
 

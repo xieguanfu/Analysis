@@ -151,5 +151,5 @@ def send_sms(cellphone, text, retry_times=3):
         send_sms(cellphone,text,retry_times)
 
 if __name__ == '__main__':
-    send_email_with_text(DIRECTOR['EMAIL'], 'text', 'subject')
+    #send_email_with_text(DIRECTOR['EMAIL'], 'text', 'subject')
     send_sms(DIRECTOR['PHONE'], u'测试短信')

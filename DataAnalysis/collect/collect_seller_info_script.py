@@ -11,12 +11,12 @@
 """
 import re
 import sys
-import datetime
+import datetime 
 
 if __name__ == '__main__':
     sys.path.append('../../')
 
-from DataAnalysis.conf.settings import CURRENT_DIR,syb_db
+from DataAnalysis.conf.settings import CURRENT_DIR,syb_db,source_db
 from DataAnalysis.db_model.shop_db import Shop
 from CommonTools.logger import logger
 from CommonTools.send_tools import send_sms, DIRECTOR
@@ -24,22 +24,35 @@ from tao_models.logistics_address_search import LogisticsAddressSearch
 from tao_models.taobao_user_seller_get import UserSellerGet
 from tao_models.taobao_trade_fullinfo_get import TradeFullinfoGet
 from tao_models.taobao_trades_sold_get  import TradesSoldGet
+from tao_models.conf.settings import set_taobao_client
 if __name__=="__main__":
     from tao_models.conf.settings import set_taobao_client
     set_taobao_client('12685542', '6599a8ba3455d0b2a043ecab96dfa6f9')
 
 class SellerInfoCollect(object):
     _conn=syb_db["CommonInfo"]
+    _conn_source=source_db["CommonInfoOnline"]
 
     @classmethod
-    def get_seller_info(cls):
-        user_list=Shop.get_all_shop_info(2)
+    def get_seller_info(cls,app_type):
+        if 1==app_type:
+            user_list=cls.get_all_shop_info('bd')
+        elif 2==app_type:
+            user_list=cls.get_all_shop_info('syb')
+        else:
+            return None
         print len(user_list)
-        user_list=user_list[11500:]
+        #user_list=user_list[11500:]
         total=len(user_list)
         index=0
         for user in user_list:
+            if "nick" not in user:
+                continue
             nick=user["nick"]
+            seller_in_db=cls.get_seller_from_db_by_nick(user["nick"])
+            if seller_in_db is not None:
+                print "%s 已经存在不更新" % nick 
+                continue
             access_token=user.get("access_token")
             if access_token is None :
                 print "%s session不存在" %(nick)
@@ -49,6 +62,10 @@ class SellerInfoCollect(object):
             if user.get("deadline") is not None and  user.get("deadline")<datetime.datetime.now():
                 print "%s过期,跳过" %(nick) 
                 continue
+            if "deadline" not in user and "sync_time" in user:
+                if user["sync_time"]<datetime.datetime.now()-datetime.timedelta(days=15):
+                    print "%s 长期没同步可能失效了,跳过" %nick
+                    continue
             try:
                seller= cls.get_single_seller_info(nick,access_token)
                cls.save_seller_info_temp(seller)
@@ -92,6 +109,17 @@ class SellerInfoCollect(object):
             return None
         trade = TradeFullinfoGet.get_trade_info(access_token, total_trade_list[0].tid, 'seller_mobile, seller_phone, seller_name,seller_email,seller_nick ')
         return trade.toDict()
+
+    @classmethod
+    def get_seller_from_db_by_nick(cls,nick):
+        seller=cls._conn["seller_info"].find_one({"nick":nick})
+        return seller
+    
+    @classmethod
+    def get_all_shop_info(cls,app):
+        cursor=cls._conn_source["shop_info_%s" % app].find()
+        return [doc for doc in cursor]
+
     @classmethod
     def get_seller_from_db(cls):
         """获取 3钻以上的杭州地址卖家 """
@@ -116,8 +144,15 @@ class SellerInfoCollect(object):
                 print info
                 file_seller.write(info)
 
+def collect_seller_info_script():
+    set_taobao_client('12685542', '6599a8ba3455d0b2a043ecab96dfa6f9')
+    SellerInfoCollect.get_seller_info(2)
+    set_taobao_client('21065688', '74aecdce10af604343e942a324641891')
+    SellerInfoCollect.get_seller_info(1)
+
 if __name__=="__main__":
-    SellerInfoCollect.get_seller_info()
-    #user=SellerInfoCollect.get_single_seller_info("6201b160a531aed44eec6fc2ZZ3e248053b1a94ad723b31130334991")
+    #user=SellerInfoCollect.get_single_seller_info("test","6201b160a531aed44eec6fc2ZZ3e248053b1a94ad723b31130334991")
+    #print user
     #SellerInfoCollect.save_seller_info_temp(user)
     #SellerInfoCollect.get_seller_from_db()
+    collect_seller_info_script()

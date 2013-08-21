@@ -514,10 +514,10 @@ if __name__ == '__main__':
     #daily_report_script()
     #cycle_report_script(CURRENT_DIR + 'data/wangwang_record.csv')
     user_obj = UserCenter()
-    #user_obj.collect_online_info()
+    user_obj.collect_online_info()
     #return_str = user_obj.analysis_orders_renew(datetime.datetime(2013,6,1,0,0), \
             #        datetime.datetime(2013,6,30,23,59), ['ts-1796606'])
     #print return_str
     #user_obj.analysis_renew_report(datetime.date(2013,7,2))
     #daily_report_script()
-    #print user_obj.analysis_pre_market(datetime.datetime(2013,7,1,0,0), datetime.datetime(2013,7,15,0,0), ['ts-1796606'],CURRENT_DIR + 'data/wangwang_0701_0715.csv')
+    print user_obj.analysis_pre_market(datetime.datetime(2013,7,1,0,0), datetime.datetime(2013,7,30,0,0), ['ts-1796606'],CURRENT_DIR + 'data/wangwang_0701_0715.csv')

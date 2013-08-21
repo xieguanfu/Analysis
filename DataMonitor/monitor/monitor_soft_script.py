@@ -34,34 +34,43 @@ def monitor_soft_script():
 
 def monitor_soft():
     """软件监测脚本
-    1.麦苗科技营销花费 定期监测
-    2.省油宝新增订单数 定期监测
-    3.省油宝新增评价 定期监测
-    4.北斗新增评价 定期监测
-    省油宝,ts-1796606
-    北斗,ts-1797607
+       1.麦苗科技营销花费 定期监测
+       2.省油宝新增订单数 定期监测
+       3.省油宝新增评价 定期监测
+       4.北斗新增评价 定期监测
+       省油宝,ts-1796606
+       北斗,ts-1797607
     """
     current_time = datetime.datetime.now()
     rest_hours = range(1,7)
     if current_time.hour in rest_hours:
         return None
-     
-    #已废弃marketing_info = monitor_marketing_cost()
+
+#已废弃marketing_info = monitor_marketing_cost()
     order_info = monitor_order_add('省油宝', 'ts-1796606')
-    comment_info = monitor_comment_add('省油宝', 'ts-1796606') + monitor_comment_add('北斗', 'ts-1797607')
+    comment_info=monitor_comment_add('省油宝', 'ts-1796606')+monitor_comment_add('北斗', 'ts-1797607')
     return_info = order_info + comment_info 
-    
     if return_info:
         #send_sms(DIRECTOR['PHONE'], return_info)
-        
+
         #send XJ
         #send_sms('18658818166', return_info)
         if comment_info:
-            #send LW
-            send_sms('15158877255', comment_info)
-            #send XK
-            send_sms('13646844762', comment_info)
-            send_sms('13588342404', comment_info)
+            sms_list=comment_info.split("\n")
+            idx=0
+            for sms  in sms_list:
+                if sms is None or sms.strip()=="":
+                    continue
+                idx+=1
+                print "%s==%s" %(idx,sms) 
+                #send_sms('15068116152', sms)
+                #send LW
+                send_sms('15158877255', sms)
+                #send XK
+                send_sms('13646844762', sms)
+                send_sms('13588342404', sms)
+                send_sms('18606716009', sms)
+                #send_sms('18658818166', sms)
         if order_info:
             #send YB
             send_sms('15858224656', return_info)
