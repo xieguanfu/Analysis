@@ -10,8 +10,6 @@
 
 """
 import sys
-import logging
-logger = logging.getLogger()
 import datetime
 if __name__ == '__main__':
     sys.path.append('../../')
@@ -19,7 +17,7 @@ if __name__ == '__main__':
 import DataMonitor.conf.settings
 from CommonTools.send_tools import send_sms, DIRECTOR
 from CommonTools.logger import logger
-from DataMonitor.monitor.monitor_marketing_cost import monitor_marketing_cost
+#from DataMonitor.monitor.monitor_marketing_cost import monitor_marketing_cost
 from DataMonitor.monitor.monitor_order_add import monitor_order_add
 from DataMonitor.monitor.monitor_comment_add import monitor_comment_add
 
