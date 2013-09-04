@@ -13,7 +13,6 @@ if __name__ == '__main__':
     import sys
     sys.path.append('../')
 import datetime
-from CommonTools.string_tools import parser_string_to_date
 
 def parse_wangwang_talk_record(file_name, start_date, end_date):
     """解析聊天nick"""
@@ -29,10 +28,10 @@ def parse_wangwang_talk_record(file_name, start_date, end_date):
         line_data = line.split(',')
         if len(line_data) < 4:
             continue
-        service_date = parser_string_to_date(line_data[0])
+        service_date = datetime.datetime.strptime(line_data[0],"%Y-%m-%d").date()
         service_nick = line_data[2]
         worker = line_data[3]
-        if worker.find('麦苗科技') == -1:
+        if worker.find('麦苗') == -1:
             continue
         if service_nick.find(':') != -1:
             service_nick = service_nick.split(':')[0]
@@ -46,7 +45,7 @@ def parse_wangwang_talk_record(file_name, start_date, end_date):
     return (worker_list, wangwang_records)
 
 if __name__ == '__main__':
-    (worker_list, wangwang_records) = parse_wangwang_talk_record('../DataAnalysis/data/wangwang_record.csv', \
-            datetime.date(2013,5,31), datetime.date(2013,6,27))
+    (worker_list, wangwang_records) = parse_wangwang_talk_record('../DataAnalysis/data/wangwang_0701_0715.csv', \
+            datetime.date(2013,7,1), datetime.date(2013,7,15))
     import pdb
     pdb.set_trace()

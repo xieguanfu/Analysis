@@ -19,6 +19,8 @@ from CommonTools.send_tools import send_email_with_file, DIRECTOR
 from CommonTools.report_tools import Report, MAIN_KEYS 
 from user_center.services.order_db_service import OrderDBService
 from DataAnalysis.db_model.shop_db import Shop
+import csv
+import re
 
 def write_renew_report(file_name, nick_list):
     """收集nick_list的报表"""
@@ -115,13 +117,42 @@ def special_content_service():
                 message_dict = {'status':'new', 'worker':'', 'message':content}
                 if Shop.upsert_cs_message(nick, message_dict):
                     print nick + ":" + str(id)
-        
+
+def special_content_service_new():
+     """ 
+     将淘宝给我们的建议放入到自动留言里
+     现在是用户名和建议放在同一个文件中,    
+     第一行为标题，第二行开始为实际内容 ,格式: nic ,留言内容,(等其他信息)
+     """
+     
+     liuyan = file(CURRENT_DIR+'data/liuyan0831.csv')
+     liuyan_list=csv.reader(liuyan)
+     index=0
+     for line_data in liuyan_list:
+         index+=1
+         if index==1:
+             continue
+         if len(line_data)>=2:
+             nick=line_data[0]
+             message=line_data[2]
+	     message=message.replace("#",",")
+	     r=re.compile("\n{2,}")
+	     message=r.sub("\n",message)
+	     if nick is None or nick=="":
+	         continue
+             #print "%s,%s" % (index,nick)
+             message_dict={"status":"new","worker":"","message":message}
+             if Shop.upsert_cs_message(nick, message_dict):
+                 print "%s\t%s" %(nick,index)
+         
+
 def auto_support_service():
     """自动生成特殊服务支持"""
     MESSAGE_A = '亲爱的掌柜您好~谨代表麦苗团队全体成员欢迎您入驻省油宝！不知亲这两天使用下来感觉怎么样呢？有问题要随时和我联系哦，如果我不在线，亲可以留言呢~！期待与亲有更多的交流，一定竭诚为亲服务的！'
     MESSAGE_B = '亲~您的软件还有3天就要到期了哦~~悄悄过来提醒下，如果亲觉得效果可以要及时续费呢，很期待继续服务亲~如果亲对我们的软件和服务有什么建议，请不要吝啬告诉我哦~~祝亲生意兴隆~！'
     user_info = {}
     all_order = OrderDBService.get_all_orders_list()
+    logger.info("start auto support size:%s" %len(all_order)) 
     for order in all_order:
         if order['article_code'] != 'ts-1796606':
             continue
@@ -188,4 +219,6 @@ def renew_account_service(_days = 4):
 if __name__ == '__main__':
     auto_support_script()
     #special_content_service()
+    #special_content_service_new()
     #renew_account_service()
+    pass

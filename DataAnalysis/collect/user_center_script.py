@@ -67,7 +67,7 @@ class UserCenter:
         order_time = datetime.datetime.combine(datetime.date.today()-datetime.timedelta(days=1), datetime.time())
         
         for order in all_order:
-            if not order_flag and order['occur_time'] >= order_time:
+            if not order_flag and order['create'] >= order_time:
                 order_flag = True
             if not order['article_code'] in self.article_code_list:
                 continue
@@ -188,20 +188,20 @@ class UserCenter:
                     #压根没购买过
                     continue
 
-                if deadline < self.time_now and shop[article_status] == '使用中':
-                    shop[article_status] = '到期'
-                    upset_flag = True
+                #if deadline < self.time_now and shop[article_status] == '使用中':
+                #    shop[article_status] = '到期'
+                #    upset_flag = True
 
                 if deadline > self.time_now:
                     #至少有一个产品是有效的
                     normal_flag = True
                 
                 #以下是服务支持部分
-                for support in supports:
-                    if support['order_id'] != shop[article_order] and \
-                            support['support_status'] == '未处理':
-                        support['support_status'] = '无效'
-                        self.update_supports.append(support)
+                #for support in supports:
+                #    if support['order_id'] != shop[article_order] and \
+                #            support['support_status'] == '未处理':
+                #        support['support_status'] = '无效'
+                #        self.update_supports.append(support)
                 
                 if order and order_id != order['order_id']:
                     #新订或续订用户
@@ -261,7 +261,6 @@ class UserCenter:
             order['worker_name'] = WORKER_DICT[shop['worker_id']]
             order['seller_name'] = shop.get('seller_name', '')
             order['seller_mobile'] = shop.get('seller_mobile', '')
-
             file_obj.write('%(nick)s,%(start)s,%(end)s,%(app_name)s,%(order_type)s,%(sale)d,订购使用中,每日更新,%(shangji)s,%(worker_name)s,%(seller_name)s,%(seller_mobile)s\n' % (order))
             #print '%(nick)s,%(start)s,%(end)s,%(app_name)s,%(order_type)s,%(sale)d,订购使用中,每日更新,%(shangji)s' % (order)
 
@@ -281,6 +280,7 @@ class UserCenter:
                 file_service_support.write('%s,%s,%s,%s,%s,%s,%s,未回访,后台发掘\n' % \
                         (order['nick'], support_name, priority, order['app_name'], support, str(support_time), order['worker_name']))
                 
+	#	print '%s,%s,%s,%s,%s,%s,%s,未回访,后台发掘\n' %(order['nick'], support_name, priority, order['app_name'], support, str(support_time), order['worker_name'])
         file_obj.close()
         file_service_support.close()
     
