@@ -163,11 +163,11 @@ def analysis_ztc_order_script():
         ztc.make_report()
         ztc.write_report()
         html = ztc.getHtml()
-        #send_email_with_html(ToMe, html, str(datetime.date.today())+'__直通车软件报表内侧版')
-        send_email_with_html(ToAll, html, str(datetime.date.today())+'__直通车软件报表公测版')
+        #send_email_with_html(ToMe, html, str(ztc.today)+'__直通车软件报表内侧版')
+        send_email_with_html(ToAll, html, str(ztc.today)+'__直通车软件报表公测版')
     except Exception,e:
         logger.exception('analysis_ztc_order_script error: %s' % (str(e)))
-        #send_sms(DIRECTOR['PHONE'], 'analysis_ztc_order_script error: '+str(e))
+        send_sms(DIRECTOR['PHONE'], 'analysis_ztc_order_script error: '+str(e))
     else:
         logger.info('analysis_ztc_order_script ok')
 
