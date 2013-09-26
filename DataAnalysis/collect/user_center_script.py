@@ -215,6 +215,8 @@ class UserCenter:
             #收集待更新的用户数据
             if upset_flag:
                 shop['update_time'] = self.time_now
+                if "worker_id" in shop:
+                    shop.pop("worker_id")
                 self.update_shops.append(shop)
     
     def generate_order_supports(self, order):
