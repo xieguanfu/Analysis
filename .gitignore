@@ -1,0 +1,7 @@
+*.csv
+*.pyc
+DataAnalysis/data/report_log
+DataMonitor/cache/ts-1796606_order
+DataMonitor/cache/ts-1796606_time
+DataMonitor/cache/ts-1797607_time
+/home/xiegf/app/Analysis/log
