@@ -99,6 +99,7 @@ class ZtcOrderReport(ZtcOrder):
         if not self.result:
             return None
         self.result.sort(key = lambda x:int(x['add_num']), reverse = True)
+        sum_order_num =0
         for report in self.result[:]:
             html_onedata = ''
             yesterday_report = self.yesterday_reports.get(report['id_name'], None)
@@ -110,10 +111,21 @@ class ZtcOrderReport(ZtcOrder):
                     delta = int(report[key]) - int(yesterday_report[key]) 
                     report[key] = self.mergeDeltaNum(report[key], delta)
                 
+            sum_order_num +=int(report["add_num"])
             for key in KEYS:
                 html_onedata += '<td align = "center">%s</td>'% str(report[key])
             html_onedata = '<tr bgcolor=' + bg[0] + '>' + html_onedata + '</tr>'
             html_data += html_onedata
+        html_sum = "<tr  bgcolor='"+ bg[0]+"'>"
+        for idx in range(len(KEYS)):
+            temp_data="&nbsp;"
+            if idx ==0:
+                temp_data="汇总"
+            if idx ==6:
+                temp_data= str(sum_order_num)
+            html_sum +="<td align='center'>"+temp_data+"</td>"
+        html_sum += "<tr>"
+        html_data += html_sum
         html += html_head
         html += html_data
         html += html_tail
@@ -155,6 +167,30 @@ class ZtcOrderReport(ZtcOrder):
 
         return type_num
 
+def analysis_ztc_order_script_2():
+    ToMe = DIRECTOR['EMAIL']
+    ToAll = 'all@maimiaotech.com'
+    try:
+        ztc = ZtcOrderReport()
+        ztc.today = datetime.date.today()
+        ztc.yesterday = ztc.today - datetime.timedelta(days=0)
+        ztc.strNum = STRNUM
+        ztc.head = HEAD
+        ztc.result = []
+        ztc.yesterday_reports = ztc.get_yesterday_report(str(ztc.yesterday))
+        ztc.get_store_order(str(ztc.yesterday))
+        ztc.make_report()
+        ztc.write_report()
+        html = ztc.getHtml()
+        send_email_with_html("zenglinjian@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内侧版')
+        send_email_with_html("tangxijin@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内侧版')
+        send_email_with_html(ToMe, html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内侧版')
+    except Exception,e:
+        logger.exception('analysis_ztc_order_script error: %s' % (str(e)))
+        send_sms(DIRECTOR['PHONE'], 'analysis_ztc_order_script error: '+str(e))
+    else:
+        logger.info('analysis_ztc_order_script ok')
+
 def analysis_ztc_order_script():
     ToMe = DIRECTOR['EMAIL']
     ToAll = 'all@maimiaotech.com'
@@ -170,6 +206,5 @@ def analysis_ztc_order_script():
         send_sms(DIRECTOR['PHONE'], 'analysis_ztc_order_script error: '+str(e))
     else:
         logger.info('analysis_ztc_order_script ok')
-
 if __name__ == '__main__':
     analysis_ztc_order_script()
