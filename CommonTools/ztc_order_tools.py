@@ -13,6 +13,7 @@ import os
 import re
 import urllib2
 from sgmllib import SGMLParser
+from BeautifulSoup import BeautifulSoup
 
 class MySgmlParser(SGMLParser):
     def __init__(self):
@@ -216,10 +217,62 @@ class ZtcOrder:
         content = wp.read()
         parser = MySgmlParser()
         parser.feed(content)
-        return parser.num_list
+        return self.get_data_from_html(content)
+    #return parser.num_list
+
+    @classmethod
+    def get_data_from_html(self,html):
+        soup = BeautifulSoup(html)
+        tr_list = soup.find("table",{"class":"tpListTable"}).find("tbody").findAll("tr")
+        data_dict = {}
+        for tr in tr_list:
+            td_list = tr.findAll("td")
+            if len(td_list) >= 5:
+                url = td_list[0].find("a")["href"]
+                idx = url.find("service_code")
+                service_code =  url[idx +len("service_code") + 1:]
+                title = td_list[1].find("dt").find("a").text
+                price = td_list[2].find("p").text
+                uv = self.to_int(td_list[3].text)
+                pv = self.to_int(td_list[4].text)
+                data_dict[service_code] = {"service_code":service_code,"price":price,"title":title,"uv":uv,"pv":pv}
+        soup.decompose()
+        return data_dict
+
+    @classmethod
+    def to_int(self,num):
+        if num is None:
+            return 0
+        elif num.isdigit():
+            return int(num)
+        else:
+            return 0
 
     @classmethod
     def get_exact_num_dict(self):
+        exact_num_dict = {}
+        for soft in SOFT_APP.values():
+            num_list = ZtcOrder.get_exact_num(soft['page_id'], soft['isv_id'])
+            app_list = soft['app_list']
+            #print 'app_list: ', ','.join(app_list)
+            #print 'num_list: ', num_list
+            if len(num_list)==0:
+                continue
+            for i in range(len(app_list)):
+                app = app_list[i]
+                service_code = SOFT_CODE.get(app)
+                if service_code is None:
+                    print "%s not found" %app 
+                    continue
+
+                exact_num_dict[app] = (num_list[service_code]["uv"], num_list[service_code]["pv"])
+                #exact_num_dict[app] = (num_list[i*2], num_list[i*2+1])
+                #print '%s, %d, %d' % (app, num_list[i*2], num_list[i*2+1])
+                print app,(num_list[service_code]["uv"], num_list[service_code]["pv"])
+        return exact_num_dict 
+
+    @classmethod
+    def get_exact_num_dict_bak(self):
         exact_num_dict = {}
         for soft in SOFT_APP.values():
             num_list = ZtcOrder.get_exact_num(soft['page_id'], soft['isv_id'])
@@ -233,6 +286,6 @@ class ZtcOrder:
                 exact_num_dict[app] = (num_list[i*2], num_list[i*2+1])
                 #print '%s, %d, %d' % (app, num_list[i*2], num_list[i*2+1])
         return exact_num_dict 
-
 if __name__ == '__main__':
-    print ZtcOrder.get_exact_num(249825, 669952568)
+    #print ZtcOrder.get_exact_num(249825, 669952568)
+    print ZtcOrder.get_exact_num_dict()
