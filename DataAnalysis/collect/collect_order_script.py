@@ -13,7 +13,7 @@ import re
 import sys
 import urllib2
 import datetime
-
+import socket
 if __name__ == '__main__':
     sys.path.append('../../')
 
@@ -21,7 +21,7 @@ from DataAnalysis.conf.settings import CURRENT_DIR
 from CommonTools.ztc_order_tools import ZtcOrder, SOFT_CODE
 from CommonTools.logger import logger
 from CommonTools.send_tools import send_sms, DIRECTOR
-
+socket.setdefaulttimeout(10)
 class ZtcOrderCollect(ZtcOrder):
     
     def __init__(self, today):
@@ -55,6 +55,28 @@ class ZtcOrderCollect(ZtcOrder):
                 if not store_order.has_key(key):
                     store_order[key] = order
 
+    def operate_exception(MAX_RETRY_TIMES=3):
+        def _wrapper_func(func):
+            def _wraped_func(*args,**kwargs):
+                retry_time=0
+                res=None
+                next=True
+                while next:
+                    retry_time+=1
+                    if retry_time>MAX_RETRY_TIMES:
+                        break
+                    try:
+                        res=func(*args,**kwargs)
+                        next=False
+                    except socket.timeout:
+                        retry_time+=1
+                    except Exception,e:
+                        retry_time+=1
+                return res
+            return _wraped_func
+        return _wrapper_func
+
+    @operate_exception(3)
     def getWebPage(self, url):
         wp = urllib2.urlopen(url)
         content = wp.read()
