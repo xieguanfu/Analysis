@@ -142,7 +142,7 @@ class ZtcOrder:
     def hash_ztc_order(self, order):
         """计算 ztc 订单 的 hash"""
 
-        return hash(order['nick']+order['version']+order['deadline']+order['payTime'][:-1])
+        return hash(order['nick']+order['version']+order['deadline']+order['payTime'][:-2])
 
     @classmethod
     def eval_ztc_order(self, content):
