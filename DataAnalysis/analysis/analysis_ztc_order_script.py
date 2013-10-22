@@ -131,7 +131,7 @@ class ZtcOrderReport(ZtcOrder):
         html += html_tail
         return html
 
-    def make_report(self):
+    def make_report(self,end_time = None):
         """生成报表"""
         
         exact_num_dict = ZtcOrder.get_exact_num_dict()
@@ -140,7 +140,7 @@ class ZtcOrderReport(ZtcOrder):
             if self.id_name not in exact_num_dict:
                 continue    
             id = id_info[1]
-            report = self.count_order(self.id_name)
+            report = self.count_order(self.id_name,end_time)
             report['add_num'] = sum(report.values())
             report['id_name'] = self.id_name
             total_num = ZtcOrder.get_total_num(id)
@@ -152,7 +152,7 @@ class ZtcOrderReport(ZtcOrder):
 
             self.result.append(report)
     
-    def count_order(self, id_name):
+    def count_order(self, id_name,end_time = None):
         """汇总今天的订单类型和数量"""
         
         type_num = {}
@@ -160,6 +160,9 @@ class ZtcOrderReport(ZtcOrder):
             type_num[key] = 0
         order_list = self.order_dict[id_name]
         for order in order_list:
+            if end_time is not None and datetime.datetime.strptime(order["payTime"],"%Y-%m-%d %H:%M:%S") >end_time:
+                continue
+
             if not type_num.has_key(order['deadline']):
                 type_num['其他'] += 1
             else:
@@ -179,7 +182,8 @@ def analysis_ztc_order_script_2():
         ztc.result = []
         ztc.yesterday_reports = ztc.get_yesterday_report(str(ztc.yesterday))
         ztc.get_store_order(str(ztc.yesterday))
-        ztc.make_report()
+        now = datetime.datetime.now().replace(second=0,minute=0)
+        ztc.make_report(now)
         ztc.write_report()
         html = ztc.getHtml()
         send_email_with_html("zenglinjian@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
