@@ -29,10 +29,9 @@ def set_soft_code(soft_code):
     from Analysis.conf import set_env
     set_env.getEnvReady(SOFT_CODE_SETTING)
     
-CURRENT_DIR=os.path.normpath(os.path.join(os.path.dirname(__file__),"../"))
-CURRENT_DIR+="/"
+CURRENT_DIR = '/home/zhoujiebing/Analysis/DataAnalysis/'
 logger = logging.getLogger("DataAnalysis")
-hdlr = logging.FileHandler(CURRENT_DIR+'/data/report_log')
+hdlr = logging.FileHandler(CURRENT_DIR+'data/report_log')
 hdlr.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s-%(levelname)s: %(message)s')
 hdlr.setFormatter(formatter)
@@ -60,7 +59,15 @@ MGDBS = {
         'bd':{
             'HOST':'xcw.maimiaotech.com',
             'PORT':27017,
-        }
+        },
+        'bd1':{
+            'HOST':'223.5.20.242',
+            'PORT':27017,
+        },
+        'bd2':{
+            'HOST':'223.5.20.254',
+            'PORT':27018,
+        },
     }
 
 #利用mongodb 自带的connection poll 来管理数据库连接
@@ -69,4 +76,10 @@ for key in ['syb1', 'syb2']:
     host_url.append('%s:%i' % (MGDBS[key]['HOST'], MGDBS[key]['PORT']))
 host_url = ','.join(host_url)
 syb_db = pymongo.MongoReplicaSetClient(host=host_url, replicaSet='syb_db_replset')
-bd_db = Connection(host=MGDBS['bd']['HOST'],port=MGDBS['bd']['PORT'])
+#bd_db = Connection(host=MGDBS['bd']['HOST'],port=MGDBS['bd']['PORT'])
+
+bd_host_url = []
+for key in ['bd1', 'bd2']:
+    bd_host_url.append('%s:%i' % (MGDBS[key]['HOST'], MGDBS[key]['PORT']))
+bd_host_url = ','.join(bd_host_url)
+bd_db = pymongo.MongoReplicaSetClient(host=bd_host_url, replicaSet='xcw_db_replset')
