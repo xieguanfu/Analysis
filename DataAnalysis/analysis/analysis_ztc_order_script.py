@@ -187,6 +187,7 @@ def analysis_ztc_order_script_2():
         ztc.write_report()
         html = ztc.getHtml()
         send_email_with_html("zenglinjian@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
+        send_email_with_html("xuyaoqiang@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
         send_email_with_html("tangxijin@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
         send_email_with_html(ToMe, html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
     except Exception,e:

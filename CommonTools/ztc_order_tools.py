@@ -12,8 +12,30 @@
 import os
 import re
 import urllib2
+import socket
 from sgmllib import SGMLParser
 from BeautifulSoup import BeautifulSoup
+
+def operate_exception(MAX_RETRY_TIMES=3):
+    def _wrapper_func(func):
+        def _wraped_func(*args,**kwargs):
+            retry_time=0
+            res=None
+            next=True
+            while next:
+                retry_time+=1
+                if retry_time>MAX_RETRY_TIMES:
+                    break
+                try:
+                    res=func(*args,**kwargs)
+                    next=False
+                except socket.timeout:
+                    retry_time+=1
+                except Exception,e:
+                    retry_time+=1
+            return res
+        return _wraped_func
+    return _wrapper_func
 
 class MySgmlParser(SGMLParser):
     def __init__(self):
@@ -165,6 +187,7 @@ class ZtcOrder:
         return eval(content)
     
     @classmethod
+    @operate_exception(6)
     def get_total_num(self, service_code):
         """获取 粗略 总数 信息"""
         url =  'http://fuwu.taobao.com/ser/detail.htm?service_code=' + service_code
@@ -196,6 +219,7 @@ class ZtcOrder:
         return total_num
     
     @classmethod
+    @operate_exception(6)
     def get_exact_num2(self):
         """获取精准 数字"""
         
@@ -209,6 +233,7 @@ class ZtcOrder:
     
 
     @classmethod
+    @operate_exception(6)
     def get_exact_num(self, page_id, isv_id):
         """获取精准 数字"""
         

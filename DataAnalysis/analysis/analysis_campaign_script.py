@@ -26,6 +26,7 @@ def analysis_campaign(syb_file, bd_file):
     content = ''
     content += analysis_campaign_complex(syb_file, '省油宝长尾计划')
     content += analysis_campaign_complex(syb_file, '省油宝加力计划')
+    content += analysis_campaign_complex(syb_file, '其他计划(省油宝)')
     content += analysis_campaign_complex(bd_file, '北斗专属计划')
     content += analysis_campaign_simple(syb_file)
     content += analysis_campaign_horizontal(syb_file)

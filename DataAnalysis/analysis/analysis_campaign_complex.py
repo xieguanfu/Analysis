@@ -41,7 +41,12 @@ class AnalysisCampaign:
             if campaign['campaign'] == '账户整体情况':
                 shop = campaign
                 continue
-            if campaign['campaign'].find(campaign_name) != -1:
+            flag1 = "其他计划(省油宝)" in campaign_name and \
+                    campaign['campaign'] not in ["省油宝长尾计划","省油宝加力计划","北斗专属计划"]
+            flag2 = campaign['campaign'].find(campaign_name) != -1 and "其他计划(省油宝)" not in campaign['campaign']
+
+            if flag1 or flag2:
+            #if campaign['campaign'].find(campaign_name) != -1:
                 if campaign['nick'] != shop['nick']:
                     print '出现不一致:',shop['nick']
                 Report.add_shop(campaign, shop)

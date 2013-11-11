@@ -19,7 +19,6 @@ from DataAnalysis.conf.settings import logger, CURRENT_DIR
 from DataAnalysis.db_model.shop_db import Shop 
 from CommonTools.send_tools import send_sms, DIRECTOR
 from CommonTools.report_tools import Report
-from CommonTools.string_tools import parser_string_to_date
 from report_db.services.campaign_rpt_search_service import CampaignRptSearchService
 from tao_models.conf.settings import set_taobao_client
 from tao_models.simba_campaigns_get import SimbaCampaignsGet

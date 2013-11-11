@@ -19,7 +19,6 @@ from DataAnalysis.conf.settings import logger, CURRENT_DIR
 from DataAnalysis.db_model.shop_db import Shop 
 from CommonTools.send_tools import send_sms, DIRECTOR
 from CommonTools.report_tools import Report
-from CommonTools.string_tools import parser_string_to_date
 from report_db.services.rpt_sum_search_service import RptSumSearchService
 from tao_models.conf.settings import set_taobao_client
 from tao_models.simba_campaigns_get import SimbaCampaignsGet
@@ -48,7 +47,7 @@ class CollectReport:
             if len(order) < 2:
                 continue
             nick = order[0]
-            order_start = parser_string_to_date(order[1])
+            order_start =datetime.datetime.strptime(order[1] ,"%Y-%m-%d").date() 
             days_delta = (self.today - order_start).days
             if days_delta > 1:
                 syb_user[nick] = min(days_delta, 15)
