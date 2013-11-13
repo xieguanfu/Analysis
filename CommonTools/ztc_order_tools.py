@@ -290,6 +290,8 @@ class ZtcOrder:
                     print "%s not found" %app 
                     continue
 
+                if service_code not in num_list:
+                    continue
                 exact_num_dict[app] = (num_list[service_code]["uv"], num_list[service_code]["pv"])
                 #exact_num_dict[app] = (num_list[i*2], num_list[i*2+1])
                 #print '%s, %d, %d' % (app, num_list[i*2], num_list[i*2+1])
