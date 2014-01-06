@@ -79,11 +79,11 @@ class ZtcOrderReport(ZtcOrder):
             return '少于100'
         return str(num) + flag 
 
-    def getHtml(self):
+    def getHtml(self,title = ""):
         bg = ["#E8FFC4","#FCFCFC"]
         html = ''
         html_head = """
-               <html><body>
+               <html><body><center style="font-size:12pt">"""+title+"""</center><br/>
                   <table align="center" border="0"  bordercolor="#000000">
                      <tr align="center" bgcolor="#548C00" style="height:50px" >
                """
@@ -185,11 +185,12 @@ def analysis_ztc_order_script_2():
         now = datetime.datetime.now().replace(second=0,minute=0)
         ztc.make_report(now)
         ztc.write_report()
-        html = ztc.getHtml()
-        send_email_with_html("zenglinjian@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
-        send_email_with_html("xuyaoqiang@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
-        send_email_with_html("tangxijin@maimiaotech.com", html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
-        send_email_with_html(ToMe, html, str(ztc.today)+" "+str(datetime.datetime.now().hour)+'点__直通车软件报表内测版')
+        html = ztc.getHtml(str(ztc.today)+" "+str(now.hour)+"点报表")
+        title = str(ztc.today)+'__直通车软件报表内测版'
+        send_email_with_html("zenglinjian@maimiaotech.com", html,title)
+        send_email_with_html("xuyaoqiang@maimiaotech.com", html,title) 
+        send_email_with_html("tangxijin@maimiaotech.com", html,title) 
+        send_email_with_html(ToMe, html,title) 
     except Exception,e:
         logger.exception('analysis_ztc_order_script error: %s' % (str(e)))
         send_sms(DIRECTOR['PHONE'], 'analysis_ztc_order_script error: '+str(e))
