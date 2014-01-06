@@ -76,7 +76,7 @@ class ZtcOrderCollect(ZtcOrder):
             return _wraped_func
         return _wrapper_func
 
-    @operate_exception(3)
+    @operate_exception(10)
     def getWebPage(self, url):
         wp = urllib2.urlopen(url)
         content = wp.read()

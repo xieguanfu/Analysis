@@ -65,7 +65,6 @@ def monitor_soft():
                 #send LW
                 send_sms('15158877255', sms)
                 send_sms('13588342404', sms)
-                send_sms('18606716009', sms)
                 send_sms('13456901833', sms)
                 #send_sms('18658818166', sms)
         if order_info:

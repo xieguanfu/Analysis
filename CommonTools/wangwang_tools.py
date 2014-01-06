@@ -13,7 +13,6 @@ if __name__ == '__main__':
     import sys
     sys.path.append('../')
 import datetime
-from CommonTools.string_tools import parser_string_to_date
 
 def parse_wangwang_talk_record(file_name, start_date, end_date):
     """解析聊天nick"""
@@ -29,7 +28,7 @@ def parse_wangwang_talk_record(file_name, start_date, end_date):
         line_data = line.split(',')
         if len(line_data) < 4:
             continue
-        service_date = parser_string_to_date(line_data[0])
+        service_date = datetime.datetime.strptime(line_data[0],'%Y-%m-%d')
         service_nick = line_data[2]
         worker = line_data[3]
         if worker.find('麦苗科技') == -1:

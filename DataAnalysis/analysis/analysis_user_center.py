@@ -444,7 +444,7 @@ def daily_report_script():
     """日常订单统计报表"""
     
     today = datetime.datetime.combine(datetime.date.today(), datetime.time())
-    daily_report_date = today - datetime.timedelta(days=11)
+    daily_report_date = today - datetime.timedelta(days=1)
     try:
         user_obj = UserCenter()
         user_obj.collect_online_info()
@@ -493,8 +493,8 @@ def cycle_report_script(file_name=''):
     
     print '电销绩效分析'
     print 'id,成交额,成功数,过期数,续费率'
-    phone_renew_effect = user_obj.analysis_phone_renew(datetime.datetime(2013,7,22,0,0), \
-            datetime.datetime(2013,8,22,0,0), 'ts-1796606')
+    phone_renew_effect = user_obj.analysis_phone_renew(datetime.datetime(2013,11,1,0,0), \
+            datetime.datetime(2013,11,30,0,0), 'ts-1796606')
     for id in phone_renew_effect:
         effect = phone_renew_effect[id]
         print '%d, %d, %d, %d, %.3f' % (id, effect['sum_pay'],\
