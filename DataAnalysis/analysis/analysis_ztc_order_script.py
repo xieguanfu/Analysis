@@ -88,8 +88,8 @@ class ZtcOrderReport(ZtcOrder):
                      <tr align="center" bgcolor="#548C00" style="height:50px" >
                """
         html_head += '<td width="80"><b>软件名称</td>'
-        for type in ORDER_TYPE:
-            html_head += '<td width="40"><b>' + type + '</td>'
+        for app_name in ORDER_TYPE:
+            html_head += '<td width="40"><b>' + app_name+ '</td>'
         html_head += '<td width="80"><b>%s 订单总数</td>'%self.today
         for strnum in self.strNum:
             html_head += '<td width="90"><b>' + strnum + '</td>'
@@ -100,6 +100,10 @@ class ZtcOrderReport(ZtcOrder):
             return None
         self.result.sort(key = lambda x:int(x['add_num']), reverse = True)
         sum_order_num =0
+        sum_all_num = 0
+        sum_pay_num = 0
+        order_count_syb = 0
+        report_syb = {} 
         for report in self.result[:]:
             html_onedata = ''
             yesterday_report = self.yesterday_reports.get(report['id_name'], None)
@@ -111,18 +115,27 @@ class ZtcOrderReport(ZtcOrder):
                     delta = int(report[key]) - int(yesterday_report[key]) 
                     report[key] = self.mergeDeltaNum(report[key], delta)
                 
-            sum_order_num +=int(report["add_num"])
+            if report["id_name"] !="麦苗淘词":
+                sum_order_num +=int(report["add_num"])
+                sum_all_num +=int(re.findall("^\s*\d+",str(report["all_num"]).replace("少于",""))[0])
+                sum_pay_num +=int(re.findall("^\s*\d+",str(report["pay_num"]).replace("少于",""))[0])
+            if report["id_name"] =="省油宝":
+                report_syb = report
             for key in KEYS:
                 html_onedata += '<td align = "center">%s</td>'% str(report[key])
             html_onedata = '<tr bgcolor=' + bg[0] + '>' + html_onedata + '</tr>'
             html_data += html_onedata
         html_sum = "<tr  bgcolor='"+ bg[0]+"'>"
+        all_num_syb = int(re.findall("^\s*\d+",str(report_syb["all_num"]).replace("少于",""))[0])
+        pay_num_syb = int(re.findall("^\s*\d+",str(report_syb["pay_num"]).replace("少于",""))[0])
+        total_dict = {6:(report_syb["add_num"],sum_order_num),7:(all_num_syb,sum_all_num),8:(pay_num_syb,sum_pay_num)}
         for idx in range(len(KEYS)):
             temp_data="&nbsp;"
             if idx ==0:
-                temp_data="汇总"
-            if idx ==6:
-                temp_data= str(sum_order_num)
+                temp_data="汇总(除淘词)"
+            if idx in total_dict:
+                entry = total_dict[idx]
+                temp_data= "%s(%.3f)" %(entry[1],int(entry[0])/(entry[1]+0.0000001))
             html_sum +="<td align='center'>"+temp_data+"</td>"
         html_sum += "<tr>"
         html_data += html_sum

@@ -176,7 +176,7 @@ class AnalysisCampaign:
         for campaign in self.campaign_list:
             if campaign['campaign'].find('CANCEL') != -1:
                 cancel_num += 1
-                continue
+                #continue
             if campaign['pv'] <= 0:
                 zero_pv += 1
             elif campaign['click'] < 20:
