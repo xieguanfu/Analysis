@@ -18,6 +18,7 @@ if __name__ == '__main__':
 from DataMonitor.conf.settings import CACHE_DIR
 
 import time
+import datetime as dt
 from datetime import datetime
 import HTMLParser
 parser = HTMLParser.HTMLParser()
@@ -58,9 +59,9 @@ def monitor_comment_add(id_name='省油宝', id='ts-1796606'):
     comment_list = get_first_page_comment(id)
     if comment_list is None or len(comment_list)==0:
         return None
-    #(old_nick, old_comment) = get_record_comment(id)
     max_time=get_record_time(id)
-    today=1000*time.mktime(datetime.now().date().timetuple())      
+    today = datetime.now() - dt.timedelta(hours =1)
+    today=1000*time.mktime(today.date().timetuple())      
     max_time=max(max_time,today)
     comment_list.sort(key=lambda e:int(e["gmtCreate"]),reverse=True)
     first_comment = comment_list[0]
@@ -100,5 +101,5 @@ def get_first_page_comment(id):
         return comment_list
 
 if __name__ == '__main__':
-    #print monitor_comment_add()
-    get_record_time("ts-1796606")
+    print monitor_comment_add()
+    #print get_record_time("ts-1796606")

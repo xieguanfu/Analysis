@@ -15,7 +15,7 @@ if __name__ == '__main__':
     sys.path.append('../../')
 
 import DataMonitor.conf.settings
-from CommonTools.send_tools import send_sms, DIRECTOR
+from CommonTools.send_tools import send_sms, DIRECTOR,send_email_with_text
 from CommonTools.logger import logger
 #from DataMonitor.monitor.monitor_marketing_cost import monitor_marketing_cost
 from DataMonitor.monitor.monitor_order_add import monitor_order_add
@@ -40,7 +40,8 @@ def monitor_soft():
        北斗,ts-1797607
     """
     current_time = datetime.datetime.now()
-    rest_hours = range(1,7)
+    print current_time
+    rest_hours = range(2,7)
     if current_time.hour in rest_hours:
         return None
 
@@ -60,14 +61,18 @@ def monitor_soft():
                 if sms is None or sms.strip()=="":
                     continue
                 idx+=1
-                print "%s==%s" %(idx,sms) 
+                print "time:%s,==%s==%s" %(datetime.datetime.now(),idx,sms) 
                 #send_sms('15068116152', sms)
                 #send LW
                 send_sms('15158877255', sms)
                 send_sms('13588342404', sms)
                 send_sms('13456901833', sms)
                 send_sms('15397136805', sms)
+                send_sms('15168418068', sms)
+                send_sms('15168416259', sms)
+                send_sms('15268122271', sms)
                 #send_sms('18658818166', sms)
+                #send_sms('15068116152', sms)
         if order_info:
             #send YB
             send_sms('15858224656', return_info)

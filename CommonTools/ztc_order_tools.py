@@ -56,13 +56,13 @@ class MySgmlParser(SGMLParser):
                 self.num_list.append(int(data))
 
 SOFT_APP = {
-        '麦苗':{'page_id':678882, 'isv_id':847721042, 'app_list':['省油宝', '北斗', '麦苗淘词','车手绩效']},
+        '麦苗':{'page_id':678882, 'isv_id':847721042, 'app_list':['省油宝', '省油宝_Q牛','北斗', '麦苗淘词','车手绩效']},
         '点越':{'page_id':223037, 'isv_id':599244911, 'app_list':['智驾宝', '懒人开车', '魔镜看看']},
-        '喜宝':{'page_id':249825, 'isv_id':669952568, 'app_list':['超级车手','皇冠车手']},
-        '派生':{'page_id':556281, 'isv_id':836440495, 'app_list':['开车精灵']},
-        '世奇':{'page_id':183061, 'isv_id':499456566, 'app_list':['淘快车', '淘快词']},
+        '喜宝':{'page_id':249825, 'isv_id':669952568, 'app_list':['超级车手','无线车手_Q牛','皇冠车手']},
+        '派生':{'page_id':556281, 'isv_id':836440495, 'app_list':['开车精灵','开车精灵_Q牛']},
+        '世奇':{'page_id':183061, 'isv_id':499456566, 'app_list':['淘快车', '淘快词','安心代驾_Q牛']},
         '思正':{'page_id':351841, 'isv_id':734268441, 'app_list':['疯狂标签', '疯狂海报', '疯狂排名','疯狂促销', '疯狂车手']},
-        '名传':{'page_id':690262, 'isv_id':897211958, 'app_list':['车神']},
+        '名传':{'page_id':690262, 'isv_id':897211958, 'app_list':['千里马_Q牛','车神']},
         '万青':{'page_id':486444, 'isv_id':804767803, 'app_list':['好又快']},
         '大麦':{'page_id':387653, 'isv_id':750452133, 'app_list':['大麦优驾']},
         '将行':{'page_id':886856, 'isv_id':928006811, 'app_list':['自动标题','智能车手','智能淘词']},
@@ -81,6 +81,10 @@ SOFT_APP = {
         '泰岳':{'page_id':1030662, 'isv_id':1084621530, 'app_list':['推广王']},
         '商聪':{'page_id':182580, 'isv_id':469163586, 'app_list':['壹商宝']},
         '大唐':{'page_id':38125, 'isv_id':370702873, 'app_list':['宝贝排名专家','宝贝上下架','开车助手']},
+        '软云':{'page_id':1309523, 'isv_id':1743719857, 'app_list':['动车魔方']},
+        '悦己':{'page_id':1000578, 'isv_id':1063001633, 'app_list':['金牌店长','金牌车手']},
+        '郑州数据魔方':{'page_id':1317794, 'isv_id':1754575587, 'app_list':['魔方']},
+        '杭州匠心':{'page_id':1342012, 'isv_id':1922950968, 'app_list':['驷马轻车']},
 
         }
 
@@ -117,6 +121,15 @@ SOFT_CODE = {
         '推广王':'FW_GOODS-1840738',
         '壹商宝':'FW_GOODS-1868309',
         '开车助手':'ts-12682',
+        '动车魔方':'FW_GOODS-1892469',
+        '金牌车手':'FW_GOODS-1887357',
+        '魔方':'FW_GOODS-1892705',
+        '驷马轻车':'FW_GOODS-1946864',
+        '千里马_Q牛':'FW_GOODS-1886180',
+        '安心代驾_Q牛':'FW_GOODS-1897024',
+        '省油宝_Q牛':'FW_GOODS-1886206',
+        '开车精灵_Q牛':'FW_GOODS-1921400',
+        '无线车手_Q牛':'FW_GOODS-1886214',
         }
 
 
@@ -206,6 +219,10 @@ class ZtcOrder:
                 total_num[keys[i]] = 0
                 i += 1
                 continue
+            if '暂无评价' in str_num:
+                total_num[keys[i]] = 0
+                i += 2
+                continue
             if str_num.find('万') != -1:
                 factor = 10000
             str_num = re.findall('[\d.]+', str_num)
@@ -238,6 +255,7 @@ class ZtcOrder:
         """获取精准 数字"""
         
         url = 'http://fuwu.taobao.com/serv/shop_index.htm?page_id=%d&tab_type=1&isv_id=%d' % (page_id, isv_id)
+        
         wp = urllib2.urlopen(url)
         content = wp.read()
         parser = MySgmlParser()
@@ -277,11 +295,12 @@ class ZtcOrder:
     def get_exact_num_dict(self):
         exact_num_dict = {}
         for soft in SOFT_APP.values():
+
             num_list = ZtcOrder.get_exact_num(soft['page_id'], soft['isv_id'])
             app_list = soft['app_list']
             #print 'app_list: ', ','.join(app_list)
             #print 'num_list: ', num_list
-            if len(num_list)==0:
+            if not num_list or len(num_list)==0:
                 continue
             for i in range(len(app_list)):
                 app = app_list[i]
@@ -316,3 +335,5 @@ class ZtcOrder:
 if __name__ == '__main__':
     #print ZtcOrder.get_exact_num(249825, 669952568)
     print ZtcOrder.get_exact_num_dict()
+    print ZtcOrder.get_total_num('FW_GOODS-1946864')
+    print ZtcOrder.get_total_num('ts-1796606')

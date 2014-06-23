@@ -25,7 +25,7 @@ from CommonTools.logger import logger
 
 SEND_COMMAND = 'MT_REQUEST' 
 SPID = '5208'
-SP_PASSWORD = 'mm5208'
+SP_PASSWORD = 'Ad8@@yt011'
 DC = '15'
 SEND_MSG_URL = 'http://esms.etonenet.com/sms/mt'
 DIRECTOR = {

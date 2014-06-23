@@ -158,12 +158,14 @@ class ZtcOrderReport(ZtcOrder):
             report['id_name'] = self.id_name
             total_num = ZtcOrder.get_total_num(id)
             for key in NUM_TYPE:
-                report[key] = total_num[key]
+                report[key] = total_num.get(key,0)
             exact_num = exact_num_dict[self.id_name]
             for i in range(len(EXACT_TYPE)):
                 report[EXACT_TYPE[i]] = exact_num[i]
 
+            print report
             self.result.append(report)
+        print  self.result
     
     def count_order(self, id_name,end_time = None):
         """汇总今天的订单类型和数量"""
@@ -199,10 +201,14 @@ def analysis_ztc_order_script_2():
         ztc.make_report(now)
         ztc.write_report()
         html = ztc.getHtml(str(ztc.today)+" "+str(now.hour)+"点报表")
+        print "88888==%s==html===%s"%(datetime.datetime.now(),html) 
         title = str(ztc.today)+'__直通车软件报表内测版'
-        send_email_with_html("zenglinjian@maimiaotech.com", html,title)
-        send_email_with_html("xuyaoqiang@maimiaotech.com", html,title) 
-        send_email_with_html("tangxijin@maimiaotech.com", html,title) 
+        #send_email_with_html("linyao@maimiaotech.com", html,title)
+        send_email_with_html("diyou@maimiaotech.com", html,title)
+        #send_email_with_html("tangxijin@maimiaotech.com", html,title) 
+        #send_email_with_html("yanzezhao@maimiaotech.com", html,title) 
+        send_email_with_html("yunying@maimiaotech.com", html,title) 
+
         send_email_with_html(ToMe, html,title) 
     except Exception,e:
         logger.exception('analysis_ztc_order_script error: %s' % (str(e)))
@@ -218,6 +224,7 @@ def analysis_ztc_order_script():
         ztc.make_report()
         ztc.write_report()
         html = ztc.getHtml()
+        print "999999==%s==html===%s"%(datetime.datetime.now(),html) 
         #send_email_with_html(ToMe, html, str(ztc.today)+'__直通车软件报表内侧版')
         send_email_with_html(ToAll, html, str(ztc.today)+'__直通车软件报表公测版')
     except Exception,e:
@@ -226,4 +233,4 @@ def analysis_ztc_order_script():
     else:
         logger.info('analysis_ztc_order_script ok')
 if __name__ == '__main__':
-    analysis_ztc_order_script()
+    analysis_ztc_order_script_2()
