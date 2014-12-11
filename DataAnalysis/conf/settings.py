@@ -50,17 +50,17 @@ if pymongo.version.startswith("2.5"):
 #MONGODB SETTINGS
 MGDBS = {
         'syb':{
-            'HOST':'app.maimiaotech.com',
+            'HOST':'localhost',
             'PORT':2201,
         },
 
         'bd':{
-            'HOST':'app.maimiaotech.com',
-            'PORT':1996,
+            'HOST':'localhost',
+            'PORT':2201,
         },
         'source':{
-            'HOST':'app.maimiaotech.com',
-            'PORT':2006,
+            'HOST':'localhost',
+            'PORT':2201,
         }
     }
 

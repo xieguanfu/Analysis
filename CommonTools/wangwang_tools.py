@@ -48,4 +48,3 @@ if __name__ == '__main__':
     (worker_list, wangwang_records) = parse_wangwang_talk_record('../DataAnalysis/data/wangwang_record.csv', \
             datetime.date(2013,5,31), datetime.date(2013,6,27))
     import pdb
-    pdb.set_trace()

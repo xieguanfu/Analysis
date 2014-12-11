@@ -18,6 +18,7 @@ if __name__ == '__main__':
     sys.path.append('../../')
 
 from DataAnalysis.conf.settings import CURRENT_DIR
+from DataAnalysis.analysis.wxb_tools import login 
 from CommonTools.ztc_order_tools import ZtcOrder, SOFT_CODE
 from CommonTools.logger import logger
 from CommonTools.send_tools import send_sms, DIRECTOR
@@ -43,6 +44,13 @@ class ZtcOrderCollect(ZtcOrder):
         file_obj.close()
 
     def get_order(self):
+
+        _tb_token="e531e38e35e3e" 
+        #agent_nick="麦苗科技营销" #代理账号,如果此账号不为空则自动切换到此账号
+        #ztc_dict=login("麦苗科技001","TestMaimiao2014#",_tb_token,agent_nick=None,is_tp = True)
+        #if not ztc_dict:
+        #    print '%s order get failed because login failed' % datetime.datetime.now()
+        #    return
         for id_info in self.id_data:
             self.id_name = id_info[0]
             id = id_info[1]
@@ -96,6 +104,7 @@ class ZtcOrderCollect(ZtcOrder):
             url = self.getUrl(id, str(page))
             content = self.getWebPage(url).split('\n')
             page_dict = ZtcOrder.eval_ztc_order(content[1])
+
             page_list = page_dict['data']
             for order in page_list:
                 if order['payTime'].find(today) != -1:

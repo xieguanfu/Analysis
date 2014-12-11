@@ -28,6 +28,8 @@ def analysis_campaign(syb_file, bd_file):
     content += analysis_campaign_complex(syb_file, '省油宝加力计划')
     content += analysis_campaign_complex(syb_file, '其他计划(省油宝)')
     content += analysis_campaign_complex(bd_file, '北斗专属计划')
+    content += analysis_campaign_complex(syb_file, '开车精灵-长尾托管')
+    content += analysis_campaign_complex(syb_file, '开车精灵-重点托管')
     content += analysis_campaign_simple(syb_file)
     content += analysis_campaign_horizontal(syb_file)
     return content
@@ -41,8 +43,8 @@ def analysis_campaign_script():
         return None
     try:
         content = analysis_campaign(syb_file, bd_file)
-        #send_email_with_text(DIRECTOR['EMAIL'], content, today+'_产品报表日常分析')
-        send_email_with_text('product@maimiaotech.com', content, today+'_产品报表日常分析')
+        send_email_with_text(DIRECTOR['EMAIL'], content, today+'_产品报表日常分析')
+        #send_email_with_text('product@maimiaotech.com', content, today+'_产品报表日常分析')
 
     except Exception,e:
         logger.exception('analysis_campaign error: %s' % (str(e)))

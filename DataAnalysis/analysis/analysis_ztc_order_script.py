@@ -202,14 +202,17 @@ def analysis_ztc_order_script_2():
         ztc.write_report()
         html = ztc.getHtml(str(ztc.today)+" "+str(now.hour)+"点报表")
         print "88888==%s==html===%s"%(datetime.datetime.now(),html) 
+        if not html:
+            print 'html is None'
+            return
         title = str(ztc.today)+'__直通车软件报表内测版'
         #send_email_with_html("linyao@maimiaotech.com", html,title)
-        send_email_with_html("diyou@maimiaotech.com", html,title)
+        #send_email_with_html("diyou@maimiaotech.com", html,title)
         #send_email_with_html("tangxijin@maimiaotech.com", html,title) 
         #send_email_with_html("yanzezhao@maimiaotech.com", html,title) 
-        send_email_with_html("yunying@maimiaotech.com", html,title) 
+        send_email_with_html("topyunying@maimiaotech.com;xieguanfu@maimiaotech.com;diyou@maimiaotech.com", html,title) 
 
-        send_email_with_html(ToMe, html,title) 
+        #send_email_with_html(ToMe, html,title) 
     except Exception,e:
         logger.exception('analysis_ztc_order_script error: %s' % (str(e)))
         send_sms(DIRECTOR['PHONE'], 'analysis_ztc_order_script error: '+str(e))
@@ -233,4 +236,5 @@ def analysis_ztc_order_script():
     else:
         logger.info('analysis_ztc_order_script ok')
 if __name__ == '__main__':
-    analysis_ztc_order_script_2()
+    analysis_ztc_order_script()
+    pass

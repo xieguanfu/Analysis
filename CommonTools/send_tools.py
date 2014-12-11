@@ -41,13 +41,15 @@ def send_email_with_text(addressee, text, subject):
     msg.attach(MIMEText(text, _charset='utf-8'))
     msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = DIRECTOR['EMAIL']
-    msg['To'] = addressee
+    to_list = [ str(adr).strip() for adr in addressee.split(';')] if type(addressee) in [str,type(u'')] else addressee
+    msg['To'] = ';'.join(to_list) 
     try:
         smtp = smtplib.SMTP()
         smtp.connect('smtp.ym.163.com', 25) 
         smtp.login(msg['From'], DIRECTOR['SECRET'])
-        smtp.sendmail(msg['From'], msg['To'], msg.as_string())
+        smtp.sendmail(msg['From'], to_list, msg.as_string())
     except Exception,e:
+        print e
         logger.exception('send_email: %s' % (str(e)))
 
 def send_email_with_html(addressee, html, subject):
@@ -56,14 +58,15 @@ def send_email_with_html(addressee, html, subject):
     msg = MIMEMultipart()
     msg['Subject'] = Header(subject, 'utf-8')
     msg['From'] = DIRECTOR['EMAIL']
-    msg['To'] = addressee
+    to_list = [ str(adr).strip() for adr in addressee.split(';')] if type(addressee) in [str,type(u'')] else addressee
+    msg['To'] = ';'.join(to_list) 
     html_att = MIMEText(html, 'html', 'utf-8')
     msg.attach(html_att)
     try:
         smtp = smtplib.SMTP()
         smtp.connect('smtp.ym.163.com', 25) 
         smtp.login(msg['From'], DIRECTOR['SECRET'])
-        smtp.sendmail(msg['From'], msg['To'], msg.as_string())
+        smtp.sendmail(msg['From'], to_list, msg.as_string())
     except Exception,e:
         logger.exception('send_email: %s' % (str(e)))
 
@@ -145,6 +148,6 @@ def send_sms(cellphone, text, retry_times=3):
         send_sms(cellphone,text,retry_times)
 
 if __name__ == '__main__':
-    #send_email_with_text(DIRECTOR['EMAIL'], 'text', 'subject')
-    send_sms(DIRECTOR['PHONE'], u'测试短信1')
-    send_sms(DIRECTOR['PHONE'], '测试短信2')
+    send_email_with_html('115965829@qq.com;xieguanfu@maimiaotech.com', '你收到邮件了吗', 'subject')
+    #send_sms(DIRECTOR['PHONE'], u'测试短信1')
+    #send_sms(DIRECTOR['PHONE'], '测试短信2')
