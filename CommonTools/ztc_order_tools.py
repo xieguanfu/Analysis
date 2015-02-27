@@ -9,12 +9,17 @@
 @copyright: Copyright alibaba-inc.com
 
 """
-import os
+import os,sys
 import re
 import urllib2
 import socket
 from sgmllib import SGMLParser
 from BeautifulSoup import BeautifulSoup
+if __name__ == '__main__':
+    sys.path.append('../../')
+    sys.path.append('../')
+from DataAnalysis.conf.settings import CURRENT_DIR
+from data_center.request.request_tools import RequestTool
 
 def operate_exception(MAX_RETRY_TIMES=3):
     def _wrapper_func(func):
@@ -137,6 +142,7 @@ SOFT_CODE = {
 
 
 class ZtcOrder:
+    tool = RequestTool(is_proxy = True)
 
     @classmethod
     def get_file_name(self, current_dir, date):
@@ -209,8 +215,9 @@ class ZtcOrder:
         url =  'http://fuwu.taobao.com/ser/detail.htm?service_code=' + service_code
         #keys 与ztc_report_tools 中的NUM_TYPE 呼应
         keys = ['grade', 'comment_num', 'pay_num', 'free_num', 'pv']
-        wp = urllib2.urlopen(url)
-        content = wp.read()
+        #wp = urllib2.urlopen(url)
+        #content = wp.read()
+        content = self.tool.get_keep_response(url,auto_headers = True)
         total_num = {}
         r = re.compile(r'(?s)<span class="(count|grade)">(?P<data>[^<]+)</span>')
         i = 0
@@ -244,8 +251,9 @@ class ZtcOrder:
         """获取精准 数字"""
         
         url = 'http://fuwu.taobao.com/serv/shop_index.htm?spm=0.0.0.0.PzIJIc&page_id=678882&isv_id=847721042&page_rank=2&tab_type=1'
-        wp = urllib2.urlopen(url)
-        content = wp.read()
+        #wp = urllib2.urlopen(url)
+        #content = wp.read()
+        content = self.tool.get_keep_response(url,auto_headers = True)
         r = re.compile(r'(?s)<d>(?P<data>[\d]+)</d>')
         for m in r.finditer(content):
             v = m.group("data")
@@ -259,8 +267,9 @@ class ZtcOrder:
         
         url = 'http://fuwu.taobao.com/serv/shop_index.htm?page_id=%d&tab_type=1&isv_id=%d' % (page_id, isv_id)
         
-        wp = urllib2.urlopen(url)
-        content = wp.read()
+        #wp = urllib2.urlopen(url)
+        #content = wp.read()
+        content = self.tool.get_keep_response(url,auto_headers = True)
         parser = MySgmlParser()
         parser.feed(content)
         return self.get_data_from_html(content)

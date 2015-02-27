@@ -24,6 +24,7 @@ from DataAnalysis.analysis.wxb_tools import login
 from CommonTools.ztc_order_tools import ZtcOrder, SOFT_CODE
 from CommonTools.logger import logger
 from CommonTools.send_tools import send_sms, DIRECTOR
+from data_center.request.request_tools import RequestTool
 socket.setdefaulttimeout(10)
 def operate_exception(MAX_RETRY_TIMES=3):
     def _wrapper_func(func):
@@ -46,6 +47,7 @@ def operate_exception(MAX_RETRY_TIMES=3):
         return _wraped_func
     return _wrapper_func
 class ZtcOrderCollect(ZtcOrder):
+    tool = RequestTool(is_proxy = True)
     
     def __init__(self, today):
         #获取所有直通车软件
@@ -86,21 +88,21 @@ class ZtcOrderCollect(ZtcOrder):
                     store_order[key] = order
 
 
-    @operate_exception(10)
+    #@operate_exception(10)
     def getWebPage(self, url):
-        agent_1 = '''Mozilla/5.0 (Windows NT 6.1; rv:33.0) Gecko/20100101 Firefox/33.0'''
-        agent_2 = '''Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36'''
-        agent_3 = '''Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 SE 2.X MetaSr 1.0'''
-        agent_4 = '''Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1650.63 Safari/537.36'''
-        agent_list =[agent_1,agent_2,agent_3,agent_4]
-        if random.randint(1,5) in [2,5]:
-            sleep_time = random.sample([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.3,1.5,1.6,2,2.3,2.6,3,4],1)[0]
-            time.sleep(sleep_time)
-        request = urllib2.Request(url)
-        request.add_header('User-Agent', random.sample(agent_list,1)[0])
-        wp = urllib2.urlopen(url=request, timeout=5)
-        #wp = urllib2.urlopen(url)
-        content = wp.read()
+        #agent_1 = '''Mozilla/5.0 (Windows NT 6.1; rv:33.0) Gecko/20100101 Firefox/33.0'''
+        #agent_2 = '''Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36'''
+        #agent_3 = '''Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 SE 2.X MetaSr 1.0'''
+        #agent_4 = '''Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1650.63 Safari/537.36'''
+        #agent_list =[agent_1,agent_2,agent_3,agent_4]
+        #if random.randint(1,5) in [2,5]:
+        #    sleep_time = random.sample([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.3,1.5,1.6,2,2.3,2.6,3,4],1)[0]
+        #    time.sleep(sleep_time)
+        #request = urllib2.Request(url)
+        #request.add_header('User-Agent', random.sample(agent_list,1)[0])
+        #wp = urllib2.urlopen(url=request, timeout=5)
+        #content = wp.read()
+        content = self.tool.get_keep_response(url,auto_headers = True)
         return content
     
     def getUrl(self, id, day):
