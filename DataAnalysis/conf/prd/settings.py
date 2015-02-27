@@ -71,15 +71,15 @@ MGDBS = {
     }
 
 #利用mongodb 自带的connection poll 来管理数据库连接
-host_url = []
-for key in ['syb1', 'syb2']:
-    host_url.append('%s:%i' % (MGDBS[key]['HOST'], MGDBS[key]['PORT']))
-host_url = ','.join(host_url)
-syb_db = pymongo.MongoReplicaSetClient(host=host_url, replicaSet='syb_db_replset')
-#bd_db = Connection(host=MGDBS['bd']['HOST'],port=MGDBS['bd']['PORT'])
-
-bd_host_url = []
-for key in ['bd1', 'bd2']:
-    bd_host_url.append('%s:%i' % (MGDBS[key]['HOST'], MGDBS[key]['PORT']))
-bd_host_url = ','.join(bd_host_url)
-bd_db = pymongo.MongoReplicaSetClient(host=bd_host_url, replicaSet='xcw_db_replset')
+#host_url = []
+#for key in ['syb1', 'syb2']:
+#    host_url.append('%s:%i' % (MGDBS[key]['HOST'], MGDBS[key]['PORT']))
+#host_url = ','.join(host_url)
+#syb_db = pymongo.MongoReplicaSetClient(host=host_url, replicaSet='syb_db_replset')
+##bd_db = Connection(host=MGDBS['bd']['HOST'],port=MGDBS['bd']['PORT'])
+#
+#bd_host_url = []
+#for key in ['bd1', 'bd2']:
+#    bd_host_url.append('%s:%i' % (MGDBS[key]['HOST'], MGDBS[key]['PORT']))
+#bd_host_url = ','.join(bd_host_url)
+#bd_db = pymongo.MongoReplicaSetClient(host=bd_host_url, replicaSet='xcw_db_replset')
