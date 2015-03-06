@@ -30,6 +30,7 @@ class ZtcOrderReport(ZtcOrder):
         #获取所有直通车软件
         self.id_data = SOFT_CODE.items()
         self.today = datetime.date.today()
+        self.today = datetime.datetime(2015,2,25).date()
         self.yesterday = self.today - datetime.timedelta(days=1)
         self.strNum = STRNUM
         self.head = HEAD
@@ -56,6 +57,23 @@ class ZtcOrderReport(ZtcOrder):
         for id_name in self.order_dict:
             order_dict_key = self.order_dict[id_name] 
             self.order_dict[id_name] = order_dict_key.values()
+        self.get_version_message()
+
+    def get_version_message(self):
+        self.version_dict = {'version_num':0,'version_detail':{}}
+        if not self.order_dict:
+            return
+        for id_name in self.order_dict:
+            order_dict_key = self.order_dict[id_name] 
+            vd = {}
+            for order in order_dict_key:
+                version = order['version']
+                if version not in vd:
+                    vd[version] = 0
+                vd[version] += 1
+            self.version_dict['version_num'] = max(self.version_dict['version_num'],len(vd))
+            self.version_dict['version_detail'][id_name] = vd
+
 
     def write_report(self):
         """将软件报表写入文件"""
@@ -80,6 +98,7 @@ class ZtcOrderReport(ZtcOrder):
         return str(num) + flag 
 
     def getHtml(self,title = ""):
+        version_num = self.version_dict['version_num']
         bg = ["#E8FFC4","#FCFCFC"]
         html = ''
         html_head = """
@@ -91,7 +110,8 @@ class ZtcOrderReport(ZtcOrder):
         for app_name in ORDER_TYPE:
             html_head += '<td width="40"><b>' + app_name+ '</td>'
         html_head += '<td width="80"><b>%s 订单总数</td>'%self.today
-        for strnum in self.strNum:
+        str_version = ['版本%d'%(i+1) for i in range(version_num)]
+        for strnum in self.strNum + str_version:
             html_head += '<td width="90"><b>' + strnum + '</td>'
         html_tail = '</table></body></html>'
 
@@ -106,6 +126,7 @@ class ZtcOrderReport(ZtcOrder):
         report_syb = {} 
         for report in self.result[:]:
             html_onedata = ''
+            html_version = ''
             yesterday_report = self.yesterday_reports.get(report['id_name'], None)
             
             if yesterday_report:
@@ -123,7 +144,18 @@ class ZtcOrderReport(ZtcOrder):
                 report_syb = report
             for key in KEYS:
                 html_onedata += '<td align = "center">%s</td>'% str(report[key])
-            html_onedata = '<tr bgcolor=' + bg[0] + '>' + html_onedata + '</tr>'
+            version_detail = self.version_dict['version_detail'].get(report["id_name"])
+            for i in range(version_num):
+                version = ''
+                vnum = ''
+                if version_detail and len(version_detail) > i:
+                    version = version_detail.keys()[i]
+                    vnum = version_detail[version]
+                    rate = 100*vnum/float(report["add_num"]) if int(report["add_num"]) else 0
+                    html_version += '<td align = "center">%s<br/>%s(%0.2f%s)</td>'%(version,vnum,rate,'%') 
+                else:
+                    html_version += '<td align = "center"></td>'
+            html_onedata = '<tr bgcolor=' + bg[0] + '>' + html_onedata + html_version + '</tr>'
             html_data += html_onedata
         html_sum = "<tr  bgcolor='"+ bg[0]+"'>"
         all_num_syb = int(re.findall("^\s*\d+",str(report_syb["all_num"]).replace("少于",""))[0])
@@ -137,6 +169,7 @@ class ZtcOrderReport(ZtcOrder):
                 entry = total_dict[idx]
                 temp_data= "%s(%.3f)" %(entry[1],int(entry[0])/(entry[1]+0.0000001))
             html_sum +="<td align='center'>"+temp_data+"</td>"
+        html_sum += '<td align="center"></td>' * version_num
         html_sum += "<tr>"
         html_data += html_sum
         html += html_head
@@ -205,14 +238,11 @@ def analysis_ztc_order_script_2():
         if not html:
             print 'html is None'
             return
+        if now.hour <10:
+            return
         title = str(ztc.today)+'__直通车软件报表内测版'
-        #send_email_with_html("linyao@maimiaotech.com", html,title)
-        #send_email_with_html("diyou@maimiaotech.com", html,title)
-        #send_email_with_html("tangxijin@maimiaotech.com", html,title) 
-        #send_email_with_html("yanzezhao@maimiaotech.com", html,title) 
-        send_email_with_html("topyunying@maimiaotech.com;xieguanfu@maimiaotech.com;diyou@maimiaotech.com", html,title) 
-
-        #send_email_with_html(ToMe, html,title) 
+        send_email_with_html("pd@maimiaotech.com", html,title) 
+        send_email_with_html(ToMe, html,title) 
     except Exception,e:
         logger.exception('analysis_ztc_order_script error: %s' % (str(e)))
         send_sms(DIRECTOR['PHONE'], 'analysis_ztc_order_script error: '+str(e))
