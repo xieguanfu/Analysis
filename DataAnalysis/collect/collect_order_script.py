@@ -47,7 +47,7 @@ def operate_exception(MAX_RETRY_TIMES=3):
         return _wraped_func
     return _wrapper_func
 class ZtcOrderCollect(ZtcOrder):
-    tool = RequestTool(is_proxy = True)
+    tool = RequestTool(is_proxy = True,timeout = 5)
     
     def __init__(self, today):
         #获取所有直通车软件

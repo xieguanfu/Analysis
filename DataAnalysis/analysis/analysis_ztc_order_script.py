@@ -30,7 +30,6 @@ class ZtcOrderReport(ZtcOrder):
         #获取所有直通车软件
         self.id_data = SOFT_CODE.items()
         self.today = datetime.date.today()
-        self.today = datetime.datetime(2015,2,25).date()
         self.yesterday = self.today - datetime.timedelta(days=1)
         self.strNum = STRNUM
         self.head = HEAD
@@ -103,7 +102,7 @@ class ZtcOrderReport(ZtcOrder):
         html = ''
         html_head = """
                <html><body><center style="font-size:12pt">"""+title+"""</center><br/>
-                  <table align="center" border="0"  bordercolor="#000000">
+                  <table align="center" border="0"  bordercolor="#000000" width = "1650px">
                      <tr align="center" bgcolor="#548C00" style="height:50px" >
                """
         html_head += '<td width="80"><b>软件名称</td>'
@@ -111,8 +110,10 @@ class ZtcOrderReport(ZtcOrder):
             html_head += '<td width="40"><b>' + app_name+ '</td>'
         html_head += '<td width="80"><b>%s 订单总数</td>'%self.today
         str_version = ['版本%d'%(i+1) for i in range(version_num)]
-        for strnum in self.strNum + str_version:
+        for strnum in self.strNum:
             html_head += '<td width="90"><b>' + strnum + '</td>'
+        for strnum in str_version:
+            html_head += '<td width="120"><b>' + strnum + '</td>'
         html_tail = '</table></body></html>'
 
         html_data = ''
@@ -242,6 +243,7 @@ def analysis_ztc_order_script_2():
             return
         title = str(ztc.today)+'__直通车软件报表内测版'
         send_email_with_html("pd@maimiaotech.com", html,title) 
+        send_email_with_html('liumingchao@maimiaotech.com', html,title) 
         send_email_with_html(ToMe, html,title) 
     except Exception,e:
         logger.exception('analysis_ztc_order_script error: %s' % (str(e)))

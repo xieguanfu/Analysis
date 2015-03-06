@@ -142,7 +142,7 @@ SOFT_CODE = {
 
 
 class ZtcOrder:
-    tool = RequestTool(is_proxy = True)
+    tool = RequestTool(is_proxy = True,timeout = 5)
 
     @classmethod
     def get_file_name(self, current_dir, date):
